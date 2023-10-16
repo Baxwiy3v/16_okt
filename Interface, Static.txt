@@ -1,0 +1,255 @@
+1)
+
+
+using System;
+
+
+
+class Program
+{
+    static void Main()
+    {
+        try
+        {
+            Student student1 = new Student("Aqil", "Baxsiyev");
+            Console.WriteLine($"ID: {student1.Id}  Name: {student1.Name}  Surname: {student1.Surname}  Email: {student1.CodeEmail}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"eror: {ex.Message}");
+        }
+    }
+}
+public interface ICodeAcademy
+{
+    string CodeEmail { get; }
+    void GenerateEmail();
+}
+
+public class Student : ICodeAcademy
+{
+    private static int Count = 18;
+
+    public int Id { get; }
+    public string Name { get; }
+    public string Surname { get; }
+    public string CodeEmail { get;  set; }
+
+    public Student(string name, string surname)
+    {
+        if (CheckName(name) && CheckName(surname))
+        {
+            Id = ++Count;
+            Name = name;
+            Surname = surname;
+            GenerateEmail();
+        }
+        else
+        {
+            Console.WriteLine("Ad və soyad sefdi.");
+        }
+    }
+
+    public static bool CheckName(string value)
+    {
+        if (string.IsNullOrEmpty(value) || value.Length < 3 || value.Length > 25)
+            return false;
+
+        foreach (char c in value)
+        {
+            if (!char.IsLetter(c))
+                return false;
+        }
+
+        return true;
+    }
+
+    public void GenerateEmail()
+    {
+        string email = $"{Name.ToLower()}.{Surname.ToLower()}{Id}@code.edu.az";
+        CodeEmail = email;
+    }
+}
+
+
+//**************************************************************************************************************************************************
+
+2)
+using System;
+
+
+class Program
+{
+    static void Main()
+    {
+        int number = 8;
+        Console.WriteLine($"is {number} odd? {number.IsOdd()}");
+        Console.WriteLine($"is {number} even? {number.IsEven()}");
+
+        string text = "Aqil123";
+        Console.WriteLine($" '{text}' digit? {text.HasDigit()}");
+
+        string password = "Password";
+        Console.WriteLine($"is '{password}'  password? {password.CheckPassword()}");
+
+        string input = "aqil, baxsiyev";
+        Console.WriteLine($"Capitalized: {input.Capitalize()}");
+    }
+}
+public static class ExtensionHelper
+{
+    public static bool IsOdd(this int number)
+    {
+        return number % 2 != 0;
+    }
+
+    public static bool IsEven(this int number)
+    {
+        return number % 2 == 0;
+    }
+
+    public static bool HasDigit(this string input)
+    {
+        foreach (char c in input)
+        {
+            if (char.IsDigit(c))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool CheckPassword(this string password)
+    {
+        if (password.Length < 8)
+            return false;
+
+        bool hasUpperCase = false;
+        bool hasLowerCase = false;
+        bool hasDigit = false;
+
+        foreach (char c in password)
+        {
+            if (char.IsUpper(c))
+                hasUpperCase = true;
+            else if (char.IsLower(c))
+                hasLowerCase = true;
+            else if (char.IsDigit(c))
+                hasDigit = true;
+        }
+
+        return hasUpperCase && hasLowerCase && hasDigit;
+    }
+
+    public static string Capitalize(this string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        return char.ToUpper(input[0]) + input.Substring(1);
+    }
+}
+
+
+//**************************************************************************************************************************************************
+
+3)
+using System;
+
+public class Student
+{
+    public static int Count { get;  set; } = 0;
+    public int Id { get; }
+    public string Name { get; }
+    public string Surname { get; }
+
+    public Student(string name, string surname)
+    {
+        Id = ++Count;
+        Name = name;
+        Surname = surname;
+    }
+
+    public void GetInfo()
+    {
+        Console.WriteLine($"ID: {Id}, Name: {Name}, Surname: {Surname}");
+    }
+}
+
+public class Group
+{
+    public static Group[] Groups { get; } = new Group[10];
+    public int GroupId { get; }
+    public string GroupName { get; }
+    public Student[] Students { get; }
+    private int studentCount = 0;
+
+    public int GroupCount => studentCount;
+
+    public Group(string groupName, int maxStudents)
+    {
+        GroupId = Array.IndexOf(Groups, null);
+        GroupName = groupName;
+        Students = new Student[maxStudents];
+        Groups[GroupId] = this;
+    }
+
+    public void GetGroupInfo()
+    {
+        Console.WriteLine($"Group ID: {GroupId}, Group Name: {GroupName}");
+        Console.WriteLine($"Number  Student: {GroupCount}");
+    }
+
+    public Student GetStudent(int id)
+    {
+        foreach (var student in Students)
+        {
+            if (student != null && student.Id == id)
+            {
+                return student;
+            }
+        }
+        return null;
+    }
+
+    public void AddStudent(Student student)
+    {
+        if (studentCount < Students.Length)
+        {
+            Students[studentCount++] = student;
+        }
+        else
+        {
+            Console.WriteLine("Qrup  doludurrr");
+        }
+    }
+
+    public void Search(string query)
+    {
+        Console.WriteLine($"Axtarış nəticələri '{query}':");
+        foreach (var student in Students)
+        {
+            if (student != null && (student.Name.Contains(query) || student.Surname.Contains(query)))
+            {
+                student.GetInfo();
+            }
+        }
+    }
+
+    public void RemoveStudent(int id)
+    {
+        for (int i = 0; i < Students.Length; i++)
+        {
+            if (Students[i] != null && Students[i].Id == id)
+            {
+                Students[i] = null;
+                studentCount--;
+                Console.WriteLine($"Student  ID {id}  remove.");
+                return;
+            }
+        }
+    }
+}
+
+
